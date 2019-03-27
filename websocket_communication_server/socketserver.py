@@ -1,4 +1,5 @@
 import asyncio
+
 import time
 
 import logging
@@ -56,8 +57,24 @@ class SockerServer:
     def run_forever(self):
         self.loop.run_forever()
 
+    def get_www_data_path(self):
+        import os
+        from websocket_communication_server import www_data
+        return os.path.abspath(os.path.dirname(www_data.__file__))
+
+def connect_to_first_free_port(startport=SOCKETPORT):
+    notconnected = True
+    socketserver = None
+    while notconnected:
+        try:
+            socketserver = SockerServer(port=startport)
+            notconnected = False
+        except:
+            startport += 1
+    return socketserver
 
 if __name__ == "__main__":
+
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s %(filename)s %(lineno)d %(name)s %(levelname)-8s  %(message)s",
@@ -69,15 +86,11 @@ if __name__ == "__main__":
     logging.getLogger("websockets.server").setLevel(logging.ERROR)
     logging.getLogger("websockets.protocol").setLevel(logging.ERROR)
 
-    notconnected = True
-    socketserver = None
-    while notconnected:
-        try:
-            socketserver = SockerServer(port=SOCKETPORT)
-            notconnected = False
-        except:
-            SOCKETPORT += 1
+    socketserver=connect_to_first_free_port()
 
     from websocket_communication_server.socketclient import WebSocketClient
 
     autoclient = WebSocketClient("testclient", host=socketserver.ws_adress)
+    socketserver = connect_to_first_free_port()
+    print(socketserver.get_www_data_path())
+    socketserver.run_forever()

@@ -6,7 +6,7 @@ import threading
 
 from websocket_communication_server.messagetemplates import commandmessage
 from websocket_communication_server.socketclient import WebSocketClient
-from websocket_communication_server.socketserver import SockerServer, SOCKETPORT
+from websocket_communication_server.socketserver import SockerServer, SOCKETPORT, connect_to_first_free_port
 
 
 class Testclass:
@@ -39,14 +39,7 @@ class Testclass:
 if __name__ == "__main__":
     # connects to the firsts free port
     notconnected = True
-    socketserver = None
-    while notconnected:
-        try:
-            socketserver = SockerServer(port=SOCKETPORT)  # binds to 127.0.0.1:8888++
-            notconnected = False
-        except:
-            SOCKETPORT += 1
-
+    socketserver = connect_to_first_free_port()
     threading.Thread(
         target=socketserver.run_forever
     ).start()  # runs server forever in background

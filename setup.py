@@ -1,6 +1,3 @@
-import time
-from distutils.core import setup
-
 import setuptools
 
 setup = dict(
@@ -13,11 +10,14 @@ setup = dict(
     long_description_content_type="text/markdown",
     url="https://github.com/JulianKimmig/websocket_communication_server",
     packages=setuptools.find_packages(),
+    install_requires=['FilterDict','websocket-client','websockets'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    include_package_data=True,
 )
+
 if __name__ == "__main__":
     setuptools.setup(**setup)

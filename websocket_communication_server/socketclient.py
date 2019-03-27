@@ -4,9 +4,6 @@ import time
 
 import json
 
-# import websocket
-
-# from global_functions.dict_to_kwargs import filter_dict
 import websocket
 from filter_dict import filter_dict
 
@@ -19,6 +16,7 @@ class WebSocketClient:
         self.message_cmd_functions = {}
         self.message_types = {}
         self.ws = None
+        self.time = time.time()
         self._on_open_functions = {}
         self._on_error_functions = {}
         self._on_close_functions = {}
