@@ -3,6 +3,8 @@ if(typeof logger === "undefined")
 
 var wscs={
     password:null,
+    identify_functions :[],
+    identified:false,
     type_function:{},
     ws:null,
     cmd_functions:{"disconnect":function(data){this.ws.close()}.bind(this)},
@@ -88,3 +90,24 @@ var wscs={
 };
 
 wscs.add_type_funcion('cmd', wscs.parse_socket_command.bind(wscs));
+
+
+wscs.add_cmd_funcion("indentify", function (data) {
+    if(data.data.kwargs.requires_password)
+        if(wscs.password === null)
+            wscs.password = prompt("Please enter the websocket password");
+    wscs.ws.send(wscs.commandmessage(cmd = "indentify", sender = "gui", "server", true, [], {name: "gui",password:wscs.password}));
+    wscs.identified=true;
+    let t=new Date().getTime();
+    while (new Date().getTime()-t<1000){}
+    for (let i=0;i<wscs.identify_functions.length;i++){
+        wscs.identify_functions[i]();
+    }
+}.bind(wscs));
+wscs.add_cmd_funcion("set_time", function (data) {
+    wscs.global_t = data.data.kwargs.time
+}.bind(wscs));
+wscs.add_cmd_funcion("password_reset", function (data) {
+    location.reload();
+}.bind(wscs));
+

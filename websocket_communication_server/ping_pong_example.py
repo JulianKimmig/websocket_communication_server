@@ -39,7 +39,7 @@ class Testclass:
 if __name__ == "__main__":
     # connects to the firsts free port
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s %(filename)s %(lineno)d %(name)s %(levelname)-8s  %(message)s",
         datefmt="(%H:%M:%S)",
     )
