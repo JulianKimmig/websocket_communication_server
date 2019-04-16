@@ -62,7 +62,7 @@ class WebSocketClient:
         self.ws_thread = threading.Thread(target=self.ws.run_forever, daemon=True)
 
         self.ws_thread.start()
-        # time.sleep(0.5)
+        time.sleep(1)
         if self.ws is None:
             self.host = None
             return False

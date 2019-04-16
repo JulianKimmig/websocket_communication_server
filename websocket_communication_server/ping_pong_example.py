@@ -38,14 +38,31 @@ class Testclass:
 
 if __name__ == "__main__":
     # connects to the firsts free port
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(filename)s %(lineno)d %(name)s %(levelname)-8s  %(message)s",
+        datefmt="(%H:%M:%S)",
+    )
+
     notconnected = True
     socketserver = connect_to_first_free_port()
+    print(socketserver.ws_adress)
+    print(connect_to_first_free_port().ws_adress)
     threading.Thread(
-        target=socketserver.run_forever
+        target=socketserver.run_forever,daemon=True
     ).start()  # runs server forever in background
+
+
+
     test1 = Testclass(host=socketserver.ws_adress, name="Player1")  # create player 1
     test2 = Testclass(host=socketserver.ws_adress, name="Player2")  # create player 2
     time.sleep(1)  # gives the players enought timw to identify
     test1.pass_ball(True)  # throw the first ball
-    while 1:
-        time.sleep(1)  # play forever
+    try: print(connect_to_first_free_port().ws_adress)
+    except Exception as e: print(e)
+    for i in range(10):
+        time.sleep(1)  # plays 10 seconds
+    socketserver.force_stop()
+    time.sleep(2)
+    try: print(connect_to_first_free_port().ws_adress)
+    except Exception as e: print(e)

@@ -59,6 +59,8 @@ class Connection:
         cmd_data = data["data"]
         if cmd_data["cmd"] == "indentify":
             self.identify(data)
+        elif cmd_data["cmd"] == "close_socket":
+            self.server.force_stop()
         else:
             self.server.logger.error("unknown command: " + str(cmd_data["cmd"]))
 

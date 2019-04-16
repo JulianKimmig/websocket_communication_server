@@ -80,6 +80,10 @@ var wscs={
     add_type_funcion(name,callback){
         this.type_function[name]=callback;
     },
+    send(data){
+        logger.debug(data);
+        this.ws.send(data)
+    },
 };
 
 wscs.add_type_funcion('cmd', wscs.parse_socket_command.bind(wscs));
