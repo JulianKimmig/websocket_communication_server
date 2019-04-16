@@ -66,6 +66,8 @@ class Connection:
 
     def identify(self, data):
         cmd_data = data["data"]
+        if not self.server.verify_password(cmd_data["kwargs"].get("password","")):
+            return
         if "name" in cmd_data["kwargs"]:
             self.name = cmd_data["kwargs"]["name"]
             self.identified = True

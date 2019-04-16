@@ -11,7 +11,8 @@ from websocket_communication_server.messagetemplates import commandmessage
 
 
 class WebSocketClient:
-    def __init__(self, name, logger=None, host=None, reconnect=True):
+    def __init__(self, name, logger=None, host=None, reconnect=True,password=None):
+        self.password = password
         name = str(name)
         self.message_cmd_functions = {}
         self.message_types = {}
@@ -36,7 +37,7 @@ class WebSocketClient:
         self.add_cmd_function(
             "indentify",
             lambda: self.write_to_socket(
-                commandmessage(cmd="indentify", sender=self.name, name=self.name)
+                commandmessage(cmd="indentify", sender=self.name, name=self.name,password=self.password)
             ),
         )
         self.add_cmd_function("set_time", self.set_time)

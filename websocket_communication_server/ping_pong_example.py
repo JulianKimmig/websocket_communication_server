@@ -13,7 +13,7 @@ class Testclass:
     def __init__(self, host, name):
         self.runime = 0
         self.name = name
-        self.wsc = WebSocketClient(name, host=host)
+        self.wsc = WebSocketClient(name, host=host,password="PingPongBall")
         self.wsc.add_cmd_function("pass_ball", self.pass_ball) # registers own pass_ball method to be called when reciving the pass_ball command
         self.pingpong = "ping" if "1" in name else "pong"
         self.opponent = "Player2" if "1" in name else "Player1"
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     )
 
     notconnected = True
-    socketserver = connect_to_first_free_port()
+    socketserver = connect_to_first_free_port(password="PingPongBall",pass_is_cleartext=True)
     print(socketserver.ws_adress)
     print(connect_to_first_free_port().ws_adress)
     threading.Thread(

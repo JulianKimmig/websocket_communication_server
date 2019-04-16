@@ -1,4 +1,7 @@
 import asyncio
+import binascii
+import hashlib
+import os
 
 import time
 
@@ -11,7 +14,7 @@ SOCKETPORT = 8888
 
 
 class SockerServer:
-    def __init__(self, host="127.0.0.1", port=SOCKETPORT):
+    def __init__(self, host="127.0.0.1", port=SOCKETPORT,password=None,pass_is_cleartext=False):
         logging.getLogger("websocket").setLevel(logging.ERROR)
         logging.getLogger("asyncio").setLevel(logging.ERROR)
         logging.getLogger("asyncio.coroutines").setLevel(logging.ERROR)
@@ -34,6 +37,35 @@ class SockerServer:
         self.loop.run_until_complete(ws_serv)
         self.logger.info("Socket created at " + host + ":" + str(port))
         self.ws_server=ws_serv.ws_server
+        self.password=None
+        if password is not None:
+            self.set_password(password,pass_is_cleartext)
+
+    def set_password(self, password, pass_is_cleartext):
+        if pass_is_cleartext:
+            password = self.hash_password(password)
+        self.password=password
+
+    def hash_password(self,password):
+        """Hash a password for storing."""
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+        pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'),
+                                      salt, 100000)
+        pwdhash = binascii.hexlify(pwdhash)
+        return (salt + pwdhash).decode('ascii')
+
+    def verify_password(self, provided_password):
+        """Verify a stored password against one provided by user"""
+        if self.password is None:
+            return True
+        salt = self.password[:64]
+        stored_password = self.password[64:]
+        pwdhash = hashlib.pbkdf2_hmac('sha512',
+                                      provided_password.encode('utf-8'),
+                                      salt.encode('ascii'),
+                                      100000)
+        pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+        return pwdhash == stored_password
 
     def send_to_names(self, names, message):
         while "server" in names:
@@ -84,14 +116,17 @@ class SockerServer:
             time.sleep(1)
         self.ws_server.close()
 
-def connect_to_first_free_port(startport=SOCKETPORT):
+
+
+
+def connect_to_first_free_port(startport=SOCKETPORT,**kwargs):
     notconnected = True
     socketserver = None
 
     while notconnected:
         try:
             print(startport)
-            socketserver = SockerServer(port=startport)
+            socketserver = SockerServer(port=startport,**kwargs)
             notconnected = False
         except OSError as e:
             startport += 1
@@ -105,7 +140,7 @@ if __name__ == "__main__":
         datefmt="(%H:%M:%S)",
     )
 
-    socketserver=connect_to_first_free_port()
+    socketserver=connect_to_first_free_port(password=None)
 
     from websocket_communication_server.socketclient import WebSocketClient
 

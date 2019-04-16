@@ -2,6 +2,7 @@ if(typeof logger === "undefined")
     logger = console;
 
 var wscs={
+    password:null,
     type_function:{},
     ws:null,
     cmd_functions:{"disconnect":function(data){this.ws.close()}.bind(this)},
